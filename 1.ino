@@ -1,4 +1,8 @@
 #include <Servo.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 Servo myServo;
 
@@ -32,6 +36,14 @@ int checkIR(int pin, const char* name) {
   }
 }
 
+int checkIRforDisplay(int pin) {
+  if (digitalRead(pin) == LOW) {
+    return 0;   // slot occupied
+  } else {
+    return 1;   // slot free
+  }
+}
+
 void loop() {
 
   if (digitalRead(IR3) == LOW) {
@@ -57,6 +69,28 @@ void loop() {
       Serial.println("GATE CLOSED");
     }
     delay(2000);
+    lcd.init();
+    lcd.backlight();
+
+    if (checkIRforDisplay(IR1) == 0){
+      lcd.setCursor(0,0);
+      lcd.print("S-1-F");
+    }
+    else {
+      lcd.setCursor(0,0);
+      lcd.print("S-1-E");
+    }
+    if (checkIRforDisplay(IR2) == 0){
+      lcd.setCursor(6,0);
+      lcd.print("S-2-F");
+    }
+    else {
+      lcd.setCursor(6,0);
+      lcd.print("S-2-E");
+    }
+
+    lcd.setCursor(0,1);
+    lcd.print("The Project");
   }
 
   else {
