@@ -1,30 +1,20 @@
-const int IR1 = 2;
-const int IR2 = 3;
-const int IR3 = 4;
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Change address to 0x27 or 0x3F if needed
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() {
-  Serial.begin(9600);
+  lcd.init();       
+  lcd.backlight();  
 
-  pinMode(IR1, INPUT);
-  pinMode(IR2, INPUT);
-  pinMode(IR3, INPUT);
-}
+  lcd.setCursor(0, 0);   // column 0, row 0
+  lcd.print("Welcome");
 
-void checkIR(int pin, const char* name) {
-  if (digitalRead(pin) == LOW) {
-    Serial.print(name);
-    Serial.println(" FULL");
-  } else {
-    Serial.print(name);
-    Serial.println(" EMPTY");
-  }
+  lcd.setCursor(0, 1);   // column 0, row 1
+  lcd.print("To Project");
 }
 
 void loop() {
-  checkIR(IR1, "IR1");
-  checkIR(IR2, "IR2");
-  checkIR(IR3, "IR3");
-
-  Serial.println("------");
-  delay(1000);
+  // nothing needed here
 }
