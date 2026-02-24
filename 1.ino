@@ -1,26 +1,15 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <Servo.h>
 
-// Change address to 0x27 or 0x3F if needed
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+Servo myServo;
 
 void setup() {
-  lcd.init();       
-  lcd.backlight();  
-
-  lcd.setCursor(0, 0);   // column 0, row 0
-  lcd.print("Wel");
-
-  lcd.setCursor(4, 0);   // column 0, row 0
-  lcd.print("co");
-
-  lcd.setCursor(8, 0);   // column 0, row 0
-  lcd.print("me");
-
-  lcd.setCursor(0, 1);   // column 0, row 1
-  lcd.print("To Project");
+  myServo.attach(9);   // servo signal pin connected to D9
 }
 
 void loop() {
-  // nothing needed here
+  myServo.write(0);    // move to 0 degrees
+  delay(1000);         // wait 1 second
+
+  myServo.write(90);   // move to 90 degrees
+  delay(1000);         // wait 1 second
 }
