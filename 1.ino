@@ -9,7 +9,13 @@ void setup() {
   lcd.backlight();  
 
   lcd.setCursor(0, 0);   // column 0, row 0
-  lcd.print("Welcome");
+  lcd.print("Wel");
+
+  lcd.setCursor(4, 0);   // column 0, row 0
+  lcd.print("co");
+
+  lcd.setCursor(8, 0);   // column 0, row 0
+  lcd.print("me");
 
   lcd.setCursor(0, 1);   // column 0, row 1
   lcd.print("To Project");
