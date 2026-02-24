@@ -1,16 +1,30 @@
-const int IR_PIN = 2;   // connect IR OUT to pin 2
+const int IR1 = 2;
+const int IR2 = 3;
+const int IR3 = 4;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(IR_PIN, INPUT);
+
+  pinMode(IR1, INPUT);
+  pinMode(IR2, INPUT);
+  pinMode(IR3, INPUT);
+}
+
+void checkIR(int pin, const char* name) {
+  if (digitalRead(pin) == LOW) {
+    Serial.print(name);
+    Serial.println(" FULL");
+  } else {
+    Serial.print(name);
+    Serial.println(" EMPTY");
+  }
 }
 
 void loop() {
-  int sensorValue = digitalRead(IR_PIN);
-  if (sensorValue == LOW) {
-    Serial.println("IR Sensor: FULL (Object Detected)");
-  } else {
-    Serial.println("IR Sensor: EMPTY (No Object)");
-  }
-  delay(500);
+  checkIR(IR1, "IR1");
+  checkIR(IR2, "IR2");
+  checkIR(IR3, "IR3");
+
+  Serial.println("------");
+  delay(1000);
 }
