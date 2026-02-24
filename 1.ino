@@ -7,12 +7,10 @@ void setup() {
 
 void loop() {
   int sensorValue = digitalRead(IR_PIN);
-
   if (sensorValue == LOW) {
     Serial.println("IR Sensor: FULL (Object Detected)");
   } else {
     Serial.println("IR Sensor: EMPTY (No Object)");
   }
-
   delay(500);
 }
