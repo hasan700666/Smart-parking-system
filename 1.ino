@@ -13,93 +13,84 @@ const int IRO = 13;   // exit sensor
 int slot1;
 int slot2;
 
+bool gateOpen = false;
+
 void setup() {
   Serial.begin(9600);
 
   myServo.attach(9);
-  myServo.write(0);   // gate closed
+  myServo.write(0);
 
   pinMode(IR1, INPUT);
   pinMode(IR2, INPUT);
   pinMode(IRI, INPUT);
   pinMode(IRO, INPUT);
 
-  lcd.init();        // ✅ only once
+  lcd.init();
   lcd.backlight();
 }
 
-int checkIR(int pin, const char* name) {
-  if (digitalRead(pin) == LOW) {
-    Serial.print(name);
-    Serial.println(" FULL");
-    return 0;
-  } else {
-    Serial.print(name);
-    Serial.println(" EMPTY");
-    return 1;
-  }
-}
-
-int checkIRforDisplay(int pin) {
+int checkIR(int pin) {
   if (digitalRead(pin) == LOW) return 0;
   else return 1;
 }
 
+void openGate() {
+  myServo.write(90);
+  gateOpen = true;
+  Serial.println("GATE OPEN");
+}
+
+void closeGate() {
+  delay(4000);
+  myServo.write(0);
+  gateOpen = false;
+  Serial.println("GATE CLOSED");
+}
+
 void loop() {
 
-  // -------- SLOT CHECK --------
-  slot1 = checkIR(IR1, "IR1");
-  slot2 = checkIR(IR2, "IR2");
-
+  // ---- SLOT STATUS ----
+  slot1 = checkIR(IR1);
+  slot2 = checkIR(IR2);
   int totalEmpty = slot1 + slot2;
 
-  Serial.print("Available Slots: ");
+  Serial.print("Free: ");
   Serial.println(totalEmpty);
-  Serial.println("------");
 
-  // -------- ENTRY LOGIC --------
-  if (digitalRead(IRI) == LOW) {
-    Serial.println("CAR WAITING");
-
+  // ---- ENTRY EVENT ----
+  if (digitalRead(IRI) == LOW && !gateOpen) {
     if (totalEmpty > 0) {
-      Serial.println("OPEN GATE");
-      myServo.write(90);
-
-      // wait until car passes exit sensor
-      while (digitalRead(IRO) == HIGH) {
-        Serial.println("GATE OPEND");
-        delay(1000);
-      }
-
-      delay(1000);
-      myServo.write(0);
-      Serial.println("GATE CLOSED");
+      openGate();
     } else {
       Serial.println("PARKING FULL");
     }
   }
 
-  // -------- LCD DISPLAY --------
-  if (checkIRforDisplay(IR1) == 0) {
-    lcd.setCursor(0,0);
-    lcd.print("S1:F ");
-  } else {
-    lcd.setCursor(0,0);
-    lcd.print("S1:E ");
+  // ---- EXIT EVENT ----
+  if (digitalRead(IRO) == LOW && !gateOpen) {
+    openGate();
   }
 
-  if (checkIRforDisplay(IR2) == 0) {
-    lcd.setCursor(8,0);
-    lcd.print("S2:F ");
-  } else {
-    lcd.setCursor(8,0);
-    lcd.print("S2:E ");
+  // ---- CLOSE CONDITION ----
+  if (gateOpen && digitalRead(IRI) == HIGH && digitalRead(IRO) == HIGH) {
+    delay(1000);
+    closeGate();
   }
+
+  // ---- LCD ----
+  lcd.setCursor(0,0);
+  lcd.print("S1:");
+  lcd.print(slot1 == 0 ? "F" : "E");
+
+  lcd.setCursor(8,0);
+  lcd.print("S2:");
+  lcd.print(slot2 == 0 ? "F" : "E");
 
   lcd.setCursor(0,1);
   lcd.print("Free:");
   lcd.print(totalEmpty);
-  lcd.print("  ");
+  lcd.print("   ");
 
-  delay(500);
+  delay(300);
 }
